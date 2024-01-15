@@ -1226,17 +1226,7 @@ public class RecordsSnapshotProducerIT extends AbstractRecordsProducerTest {
                 .with(PostgresConnectorConfig.TABLE_INCLUDE_LIST, "s1.part");
         start(PostgresConnector.class, configBuilder.build());
         assertConnectorIsRunning();
-        waitForSnapshotToBeCompleted();
-
-        // check the records from the snapshot
-        final int expectedCount = 4;
-        final int[] expectedPks = { 1, 2, 3, 4 };
-        SourceRecords actualRecords = consumeRecordsByTopic(expectedCount);
-        assertThat(actualRecords.allRecordsInOrder().size()).isEqualTo(expectedCount);
-        List<SourceRecord> recordsForTopicPart = actualRecords.recordsForTopic(topicName("s1.part"));
-        assertThat(recordsForTopicPart.size()).isEqualTo(expectedCount);
-        IntStream.range(0, expectedCount)
-                .forEach(i -> VerifyRecord.isValidRead(recordsForTopicPart.remove(0), PK_FIELD, expectedPks[i]));
+        assertNoRecordsToConsume();
     }
 
     @Test
